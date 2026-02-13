@@ -1,7 +1,7 @@
 import os
 import faiss
-from sentence_transformers import SentenceTransformer
 import pypdf
+from sentence_transformers import SentenceTransformer
 import streamlit as st
 
 # إعداد نموذج التحويل embeddings
@@ -11,7 +11,7 @@ documents = []
 
 def load_documents(user_files=[]):
     """
-    قراءة ملفات PDF الجاهزة + ملفات المستخدم
+    قراءة ملفات PDF الجاهزة + ملفات يرفعها المستخدم
     """
     global documents
 
@@ -40,7 +40,6 @@ def load_documents(user_files=[]):
     # 2️⃣ قراءة ملفات يرفعها المستخدم عبر Streamlit
     for file in user_files:
         try:
-            # قراءة الملف كـ PDF (يمكن تعديل لو عندك ملفات نصية)
             reader = pypdf.PdfReader(file)
             text = ""
             for page in reader.pages:
