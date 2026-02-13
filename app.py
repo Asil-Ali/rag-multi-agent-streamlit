@@ -1,35 +1,40 @@
 import os
 import streamlit as st
-from core.rag import load_documents, search
+from core.rag import load_documents
 
 st.set_page_config(page_title="RAG Multi-Agent Demo", layout="wide")
 st.title("RAG Multi-Agent Streamlit")
 
-# التحقق من وجود ملفات PDF جاهزة
+# التحقق من وجود ملفات PDF أو TXT جاهزة
 uploads_path = "data/uploads"
 if not os.path.exists(uploads_path):
     st.error(f"Error: المجلد {uploads_path} غير موجود!")
-elif not any(f.lower().endswith(".pdf") for f in os.listdir(uploads_path)):
-    st.warning("لا توجد ملفات PDF جاهزة في uploads/ للتحميل.")
+elif not any(f.lower().endswith(".pdf") or f.lower().endswith(".txt") for f in os.listdir(uploads_path)):
+    st.warning("لا توجد ملفات جاهزة في uploads/ للتحميل.")
 
-# رفع ملفات PDF جديدة من المستخدم
+# رفع ملفات PDF أو TXT جديدة من المستخدم
 uploaded_files = st.file_uploader(
-    "Upload PDF files",
-    type="pdf",
+    "Upload PDF/TXT files",
+    type=["pdf", "txt"],
     accept_multiple_files=True
 )
 
 # تحميل الملفات الجاهزة + الملفات المرفوعة
 load_documents(user_files=uploaded_files)
 
-# مربع بحث
+# مربع البحث
 query = st.text_input("Ask something about the documents:")
 
+# اختيار الـ Agent
+agent_choice = st.selectbox("Choose Agent", ["Summarizer", "FAQ", "Marketing"])
+
 if query:
-    results = search(query, top_k=3)
-    if results:
-        for i, res in enumerate(results, start=1):
-            st.markdown(f"### Result {i}")
-            st.write(res[:1000] + "...")  # عرض أول 1000 حرف فقط
-    else:
-        st.write("No results found.")
+    if agent_choice == "Summarizer":
+        from agents.summarizer_agent import summarize_document
+        st.write(summarize_document(query))
+    elif agent_choice == "FAQ":
+        from agents.faq_agent import answer_question
+        st.write(answer_question(query))
+    elif agent_choice == "Marketing":
+        from agents.marketing_agent import marketing_insights
+        st.write(marketing_insights(query))
