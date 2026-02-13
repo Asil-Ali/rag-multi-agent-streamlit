@@ -4,6 +4,14 @@ import pypdf
 from sentence_transformers import SentenceTransformer
 import streamlit as st
 
+import requests  # لو حتستعملي الاتصال بالـ API
+
+# 🌟 استدعاء المفتاح من Streamlit Secrets
+api_key = os.getenv("OPENROUTER_API_KEY")
+
+# مثال: إعداد الـ headers لاستخدام المفتاح عند الاتصال بـ OpenRouter
+headers = {"Authorization": f"Bearer {api_key}"}
+
 # إعداد نموذج التحويل embeddings
 model = SentenceTransformer("all-MiniLM-L6-v2")
 index = faiss.IndexFlatL2(384)  # الأبعاد تعتمد على النموذج
